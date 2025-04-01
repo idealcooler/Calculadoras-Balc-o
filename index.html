@@ -227,8 +227,15 @@
         }
       });
 
-      const maisVendido = Object.entries(produtos).sort((a, b) => b[1] - a[1])[0];
-      document.getElementById("produtoMaisVendido").innerText = maisVendido ? ${maisVendido[0]} (${maisVendido[1]} vendas) : "-";
+      let produtoMaisVendido = "-";
+      let maiorQuantidade = 0;
+      for (let nome in produtos) {
+        if (produtos[nome] > maiorQuantidade) {
+          maiorQuantidade = produtos[nome];
+          produtoMaisVendido = nome + " (" + maiorQuantidade + " vendas)";
+        }
+      }
+      document.getElementById("produtoMaisVendido").innerText = produtoMaisVendido;
 
       document.getElementById("comissaoTotal").innerText = "R$ " + totalComissao.toFixed(2);
       document.getElementById("comissaoDividida").innerText = "R$ " + (totalComissao / 2).toFixed(2);
