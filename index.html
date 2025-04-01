@@ -94,7 +94,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Vendas Balcão - Meta: R$ 100.000</h2>
+    <h2>Meta Mensal - Vendas Balcão: R$ 100.000</h2>
     <div class="controls">
       <button id="btnNovaVenda">+ Nova Venda</button>
       <button id="btnZerar">Zerar Tudo</button>
@@ -124,6 +124,11 @@
         <tr>
           <td colspan="6" class="bonus" id="bonusInfo">
             Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6" style="text-align: center; font-weight: bold;">
+            Total Vendido até o Momento: <span id="totalVendas">R$ 0,00</span> | Margem de Lucro Média: <span id="margemLucroMedia">0%</span>
           </td>
         </tr>
         <tr>
@@ -186,22 +191,31 @@
     function calcular() {
       let totalVendas = 0;
       let totalComissao = 0;
+      let totalFornecedor = 0;
+      let totalLucro = 0;
+      let linhas = 0;
 
       document.querySelectorAll("#comissaoTable tbody tr").forEach(row => {
         const fornecedor = parseFloat(row.cells[0].querySelector("input").value) || 0;
         const cliente = parseFloat(row.cells[1].querySelector("input").value) || 0;
-        const lucroPercent = fornecedor > 0 ? ((cliente - fornecedor) / fornecedor) * 100 : 0;
+        const lucro = cliente - fornecedor;
+        const lucroPercent = fornecedor > 0 ? (lucro / fornecedor) * 100 : 0;
         const comissao = cliente * 0.05;
 
         row.cells[3].innerText = lucroPercent.toFixed(1) + "%";
         row.cells[4].innerText = "R$ " + comissao.toFixed(2);
 
         totalVendas += cliente;
+        totalFornecedor += fornecedor;
+        totalLucro += lucroPercent;
         totalComissao += comissao;
+        linhas++;
       });
 
       document.getElementById("comissaoTotal").innerText = "R$ " + totalComissao.toFixed(2);
       document.getElementById("comissaoDividida").innerText = "R$ " + (totalComissao / 2).toFixed(2);
+      document.getElementById("totalVendas").innerText = "R$ " + totalVendas.toFixed(2);
+      document.getElementById("margemLucroMedia").innerText = linhas > 0 ? (totalLucro / linhas).toFixed(1) + "%" : "0%";
 
       const bonus = document.getElementById("bonusInfo");
       const progress = document.getElementById("progressBar");
