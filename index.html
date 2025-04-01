@@ -72,8 +72,12 @@
     }
     .bonus {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
+      color: #0033ff;
+      background-color: #e3f0ff;
+      padding: 10px;
+      border-radius: 8px;
     }
     .progress-container {
       margin-top: 15px;
@@ -99,7 +103,6 @@
       <button id="btnNovaVenda">+ Nova Venda</button>
       <button id="btnZerar">Zerar Tudo</button>
     </div>
-
     <table id="comissaoTable">
       <thead>
         <tr>
@@ -123,11 +126,6 @@
           <td id="comissaoDividida">R$ 0,00</td>
         </tr>
         <tr>
-          <td colspan="7" class="bonus" id="bonusInfo">
-            Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!
-          </td>
-        </tr>
-        <tr>
           <td colspan="7" style="text-align: center; font-weight: bold;">
             Total Vendido até o Momento: <span id="totalVendas">R$ 0,00</span> | Margem de Lucro Média: <span id="margemLucroMedia">0%</span> | Unidades Vendidas: <span id="unidadesVendidas">0</span>
           </td>
@@ -144,10 +142,16 @@
             </div>
           </td>
         </tr>
+        <tr>
+          <td colspan="7">
+            <div class="bonus" id="bonusInfo">
+              Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!
+            </div>
+          </td>
+        </tr>
       </tfoot>
     </table>
   </div>
-
   <script>
     const btnNovaVenda = document.getElementById("btnNovaVenda");
     const btnZerar = document.getElementById("btnZerar");
@@ -240,7 +244,7 @@
         bonus.style.color = "green";
       } else {
         bonus.innerText = "Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!";
-        bonus.style.color = "#333";
+        bonus.style.color = "#0033ff";
       }
 
       const porcentagem = Math.min((totalVendas / 100000) * 100, 100);
