@@ -164,15 +164,15 @@
         const lucro = cliente - fornecedor;
         const comissao = cliente * 0.05;
 
-        row.cells[3].innerText = R$ ${lucro.toFixed(2)};
-        row.cells[4].innerText = R$ ${comissao.toFixed(2)};
+        row.cells[3].innerText = "R$ " + lucro.toFixed(2);
+        row.cells[4].innerText = "R$ " + comissao.toFixed(2);
 
         totalVendas += cliente;
         totalComissao += comissao;
       });
 
-      document.getElementById("comissaoTotal").innerText = R$ ${totalComissao.toFixed(2)};
-      document.getElementById("comissaoDividida").innerText = R$ ${(totalComissao / 2).toFixed(2)};
+      document.getElementById("comissaoTotal").innerText = "R$ " + totalComissao.toFixed(2);
+      document.getElementById("comissaoDividida").innerText = "R$ " + (totalComissao / 2).toFixed(2);
 
       const bonus = document.getElementById("bonusInfo");
       const progress = document.getElementById("progressBar");
@@ -190,7 +190,6 @@
       progress.innerText = Math.floor(porcentagem) + "%";
     }
 
-    // Adiciona uma linha automaticamente ao iniciar
     window.addEventListener("DOMContentLoaded", () => {
       novaLinha();
     });
