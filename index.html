@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Comissão</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 900px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #0033ff;
+      color: white;
+    }
+
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background-color: #f0f0f0;
+    }
+
+    .resultado {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .bonus {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .progress-container {
+      margin-top: 20px;
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 25px;
+      background-color: #4caf50;
+      width: 0%;
+      color: #fff;
+      text-align: center;
+      line-height: 25px;
+      transition: width 0.5s;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Vendas Balcão - Meta: R$ 100.000</h2>
+    <table id="comissaoTable">
+      <thead>
+        <tr>
+          <th>Valor Fornecedor (R$)</th>
+          <th>Valor Pago pelo Cliente (R$)</th>
+          <th>Meio de Pagamento</th>
+          <th>Margem de Lucro (R$)</th>
+          <th>Comissão Total (5%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" step="0.01" onchange="calcular()"></td>
+          <td><input type="number" step="0.01" onchange="calcular()"></td>
+          <td><input type="text"></td>
+          <td class="lucro">R$ 0,00</td>
+          <td class="comissao">R$ 0,00</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4">Comissão Total Acumulada:</td>
+          <td id="comissaoTotal">R$ 0,00</td>
+        </tr>
+        <tr>
+          <td colspan="4">Comissão por Vendedor:</td>
+          <td id="comissaoDividida">R$ 0,00</td>
+        </tr>
+        <tr>
+          <td colspan="5" id="bonusInfo" class="bonus">Bata a meta de R$ 100.000 em vendas e cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!</td>
+        </tr>
+        <tr>
+          <td colspan="5">
+            <div class="progress-container">
+              <div id="progressBar" class="progress-bar">0%</div>
+            </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    function calcular() {
+      const rows = document.querySelectorAll('#comissaoTable tbody tr');
+      let totalComissao = 0;
+      let totalVendas = 0;
+
+      rows.forEach(row => {
+        const fornecedor = parseFloat(row.cells[0].children[0].value) || 0;
+        const cliente = parseFloat(row.cells[1].children[0].value) || 0;
+        const lucro = cliente - fornecedor;
+        const comissao = cliente * 0.05;
+
+        row.cells[3].innerText = R$ ${lucro.toFixed(2)};
+        row.cells[4].innerText = R$ ${comissao.toFixed(2)};
+
+        totalComissao += comissao;
+        totalVendas += cliente;
+      });
+
+      document.getElementById('comissaoTotal').innerText = R$ ${totalComissao.toFixed(2)};
+      document.getElementById('comissaoDividida').innerText = R$ ${(totalComissao / 2).toFixed(2)};
+
+      const bonusInfo = document.getElementById('bonusInfo');
+      const progressBar = document.getElementById('progressBar');
+
+      if (totalVendas >= 100000) {
+        bonusInfo.innerText = Parabéns! Meta de R$ 100.000 alcançada! Cada vendedor recebe um bônus de R$ 500,00.;
+        bonusInfo.style.color = 'green';
+      } else {
+        bonusInfo.innerText = Bata a meta de R$ 100.000 em vendas e cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!;
+        bonusInfo.style.color = '#333';
+      }
+
+      const progresso = Math.min((totalVendas / 100000) * 100, 100);
+      progressBar.style.width = progresso + '%';
+      progressBar.innerText = Math.floor(progresso) + '%';
+    }
+  </script>
+</body>
+</html>
