@@ -103,6 +103,7 @@
     <table id="comissaoTable">
       <thead>
         <tr>
+          <th>Produto (SKU)</th>
           <th>Valor Fornecedor (R$)</th>
           <th>Valor Pago pelo Cliente (R$)</th>
           <th>Meio de Pagamento</th>
@@ -114,25 +115,30 @@
       <tbody></tbody>
       <tfoot>
         <tr>
-          <td colspan="5">Comissão Total Acumulada:</td>
+          <td colspan="6">Comissão Total Acumulada:</td>
           <td id="comissaoTotal">R$ 0,00</td>
         </tr>
         <tr>
-          <td colspan="5">Comissão por Vendedor:</td>
+          <td colspan="6">Comissão por Vendedor:</td>
           <td id="comissaoDividida">R$ 0,00</td>
         </tr>
         <tr>
-          <td colspan="6" class="bonus" id="bonusInfo">
+          <td colspan="7" class="bonus" id="bonusInfo">
             Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!
           </td>
         </tr>
         <tr>
-          <td colspan="6" style="text-align: center; font-weight: bold;">
-            Total Vendido até o Momento: <span id="totalVendas">R$ 0,00</span> | Margem de Lucro Média: <span id="margemLucroMedia">0%</span>
+          <td colspan="7" style="text-align: center; font-weight: bold;">
+            Total Vendido até o Momento: <span id="totalVendas">R$ 0,00</span> | Margem de Lucro Média: <span id="margemLucroMedia">0%</span> | Unidades Vendidas: <span id="unidadesVendidas">0</span>
           </td>
         </tr>
         <tr>
-          <td colspan="6">
+          <td colspan="7" style="text-align: center; font-weight: bold;">
+            Produto Mais Vendido: <span id="produtoMaisVendido">-</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="7">
             <div class="progress-container">
               <div class="progress-bar" id="progressBar">0%</div>
             </div>
@@ -159,6 +165,7 @@
     function novaLinha(dados = {}) {
       const linha = document.createElement("tr");
       linha.innerHTML = `
+        <td><input type="text" value="${dados.produto || ''}" /></td>
         <td><input type="number" step="0.01" value="${dados.fornecedor || ''}" /></td>
         <td><input type="number" step="0.01" value="${dados.cliente || ''}" /></td>
         <td>
@@ -191,31 +198,39 @@
     function calcular() {
       let totalVendas = 0;
       let totalComissao = 0;
-      let totalFornecedor = 0;
       let totalLucro = 0;
       let linhas = 0;
+      const produtos = {};
 
       document.querySelectorAll("#comissaoTable tbody tr").forEach(row => {
-        const fornecedor = parseFloat(row.cells[0].querySelector("input").value) || 0;
-        const cliente = parseFloat(row.cells[1].querySelector("input").value) || 0;
+        const produto = row.cells[0].querySelector("input").value.trim();
+        const fornecedor = parseFloat(row.cells[1].querySelector("input").value) || 0;
+        const cliente = parseFloat(row.cells[2].querySelector("input").value) || 0;
         const lucro = cliente - fornecedor;
         const lucroPercent = fornecedor > 0 ? (lucro / fornecedor) * 100 : 0;
         const comissao = cliente * 0.05;
 
-        row.cells[3].innerText = lucroPercent.toFixed(1) + "%";
-        row.cells[4].innerText = "R$ " + comissao.toFixed(2);
+        row.cells[4].innerText = lucroPercent.toFixed(1) + "%";
+        row.cells[5].innerText = "R$ " + comissao.toFixed(2);
 
         totalVendas += cliente;
-        totalFornecedor += fornecedor;
         totalLucro += lucroPercent;
         totalComissao += comissao;
         linhas++;
+
+        if (produto) {
+          produtos[produto] = (produtos[produto] || 0) + 1;
+        }
       });
+
+      const maisVendido = Object.entries(produtos).sort((a, b) => b[1] - a[1])[0];
+      document.getElementById("produtoMaisVendido").innerText = maisVendido ? ${maisVendido[0]} (${maisVendido[1]} vendas) : "-";
 
       document.getElementById("comissaoTotal").innerText = "R$ " + totalComissao.toFixed(2);
       document.getElementById("comissaoDividida").innerText = "R$ " + (totalComissao / 2).toFixed(2);
       document.getElementById("totalVendas").innerText = "R$ " + totalVendas.toFixed(2);
       document.getElementById("margemLucroMedia").innerText = linhas > 0 ? (totalLucro / linhas).toFixed(1) + "%" : "0%";
+      document.getElementById("unidadesVendidas").innerText = linhas;
 
       const bonus = document.getElementById("bonusInfo");
       const progress = document.getElementById("progressBar");
@@ -237,9 +252,10 @@
       const dados = [];
       document.querySelectorAll("#comissaoTable tbody tr").forEach(row => {
         dados.push({
-          fornecedor: row.cells[0].querySelector("input").value,
-          cliente: row.cells[1].querySelector("input").value,
-          pagamento: row.cells[2].querySelector("select").value
+          produto: row.cells[0].querySelector("input").value,
+          fornecedor: row.cells[1].querySelector("input").value,
+          cliente: row.cells[2].querySelector("input").value,
+          pagamento: row.cells[3].querySelector("select").value
         });
       });
       localStorage.setItem("vendasBalcao", JSON.stringify(dados));
