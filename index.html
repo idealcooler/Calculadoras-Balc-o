@@ -36,6 +36,7 @@
       font-size: 14px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      cursor: pointer;
     }
     table {
       width: 100%;
@@ -114,7 +115,9 @@
           <td id="comissaoDividida">R$ 0,00</td>
         </tr>
         <tr>
-          <td colspan="5" id="bonusInfo" class="bonus">Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!</td>
+          <td colspan="5" id="bonusInfo" class="bonus">
+            Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!
+          </td>
         </tr>
         <tr>
           <td colspan="5">
@@ -126,59 +129,67 @@
       </tfoot>
     </table>
   </div>
+
   <script>
-    window.onload = function () {
-      function novaLinha() {
-        const tbody = document.querySelector('#comissaoTable tbody');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td><input type="number" step="0.01" onchange="calcular()"></td>
-          <td><input type="number" step="0.01" onchange="calcular()"></td>
-          <td><input type="text" onchange="calcular()"></td>
-          <td class="lucro">R$ 0,00</td>
-          <td class="comissao">R$ 0,00</td>
-        `;
-        tbody.appendChild(row);
-      }
-
-      function calcular() {
-        const rows = document.querySelectorAll('#comissaoTable tbody tr');
-        let totalComissao = 0;
-        let totalVendas = 0;
-        rows.forEach(row => {
-          const fornecedor = parseFloat(row.cells[0].children[0].value) || 0;
-          const cliente = parseFloat(row.cells[1].children[0].value) || 0;
-          const lucro = cliente - fornecedor;
-          const comissao = cliente * 0.05;
-          row.cells[3].innerText = R$ ${lucro.toFixed(2)};
-          row.cells[4].innerText = R$ ${comissao.toFixed(2)};
-          totalComissao += comissao;
-          totalVendas += cliente;
-        });
-        document.getElementById('comissaoTotal').innerText = R$ ${totalComissao.toFixed(2)};
-        document.getElementById('comissaoDividida').innerText = R$ ${(totalComissao / 2).toFixed(2)};
-        const bonusInfo = document.getElementById('bonusInfo');
-        const progressBar = document.getElementById('progressBar');
-        if (totalVendas >= 100000) {
-          bonusInfo.innerText = Parabéns! Meta de R$ 100.000 alcançada! Cada vendedor recebe um bônus de R$ 500,00.;
-          bonusInfo.style.color = 'green';
-        } else {
-          bonusInfo.innerText = Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!;
-          bonusInfo.style.color = '#333';
-        }
-        const progresso = Math.min((totalVendas / 100000) * 100, 100);
-        progressBar.style.width = progresso + '%';
-        progressBar.innerText = Math.floor(progresso) + '%';
-      }
-
-      function zerarVendas() {
-        document.querySelector('#comissaoTable tbody').innerHTML = '';
-        calcular();
-      }
-
-      // adiciona uma linha inicial
-      novaLinha();
+    function novaLinha() {
+      const tbody = document.querySelector('#comissaoTable tbody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="number" step="0.01" onchange="calcular()"></td>
+        <td><input type="number" step="0.01" onchange="calcular()"></td>
+        <td><input type="text" onchange="calcular()"></td>
+        <td class="lucro">R$ 0,00</td>
+        <td class="comissao">R$ 0,00</td>
+      `;
+      tbody.appendChild(row);
     }
+
+    function calcular() {
+      const rows = document.querySelectorAll('#comissaoTable tbody tr');
+      let totalComissao = 0;
+      let totalVendas = 0;
+
+      rows.forEach(row => {
+        const fornecedor = parseFloat(row.cells[0].children[0].value) || 0;
+        const cliente = parseFloat(row.cells[1].children[0].value) || 0;
+        const lucro = cliente - fornecedor;
+        const comissao = cliente * 0.05;
+
+        row.cells[3].innerText = R$ ${lucro.toFixed(2)};
+        row.cells[4].innerText = R$ ${comissao.toFixed(2)};
+
+        totalComissao += comissao;
+        totalVendas += cliente;
+      });
+
+      document.getElementById('comissaoTotal').innerText = R$ ${totalComissao.toFixed(2)};
+      document.getElementById('comissaoDividida').innerText = R$ ${(totalComissao / 2).toFixed(2)};
+
+      const bonusInfo = document.getElementById('bonusInfo');
+      const progressBar = document.getElementById('progressBar');
+
+      if (totalVendas >= 100000) {
+        bonusInfo.innerText = Parabéns! Meta de R$ 100.000 alcançada! Cada vendedor recebe um bônus de R$ 500,00.;
+        bonusInfo.style.color = 'green';
+      } else {
+        bonusInfo.innerText = Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!;
+        bonusInfo.style.color = '#333';
+      }
+
+      const progresso = Math.min((totalVendas / 100000) * 100, 100);
+      progressBar.style.width = progresso + '%';
+      progressBar.innerText = Math.floor(progresso) + '%';
+    }
+
+    function zerarVendas() {
+      document.querySelector('#comissaoTable tbody').innerHTML = '';
+      calcular();
+    }
+
+    // Adiciona uma linha inicial automaticamente
+    document.addEventListener('DOMContentLoaded', () => {
+      novaLinha();
+    });
   </script>
 </body>
 </html>
