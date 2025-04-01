@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Calculadora de Comissão</title>
+  <meta charset="UTF-8">
+  <title>Calculadora de Comissão - Vendas Balcão</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -190,12 +190,12 @@
         salvarDados();
         calcular();
       });
-      Array.from(linha.querySelectorAll("input, select")).forEach(input =>
+      linha.querySelectorAll("input, select").forEach(input => {
         input.addEventListener("input", () => {
           salvarDados();
           calcular();
-        })
-      );
+        });
+      });
       tabela.appendChild(linha);
     }
 
