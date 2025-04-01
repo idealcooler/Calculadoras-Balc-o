@@ -182,14 +182,9 @@
         </td>
         <td class="lucro">0%</td>
         <td class="comissao">R$ 0,00</td>
-        <td><button class="remove-btn">X</button></td>
+        <td><button class="remove-btn" onclick="if(confirm('Tem certeza que deseja remover esta linha?')) { this.closest('tr').remove(); salvarDados(); calcular(); }">X</button></td>
       `;
       linha.querySelector("select").value = dados.pagamento || "pix";
-      linha.querySelector(".remove-btn").addEventListener("click", () => {
-        linha.remove();
-        salvarDados();
-        calcular();
-      });
       linha.querySelectorAll("input, select").forEach(input => {
         input.addEventListener("input", () => {
           salvarDados();
