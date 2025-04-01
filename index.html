@@ -18,14 +18,28 @@
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      max-width: 900px;
+      max-width: 1000px;
       width: 100%;
     }
 
     h2 {
       text-align: center;
       color: #333;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
       margin-bottom: 20px;
+    }
+
+    .controls select,
+    .controls button {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     table {
@@ -59,13 +73,6 @@
       background-color: #f0f0f0;
     }
 
-    .resultado {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
     .bonus {
       text-align: center;
       font-size: 18px;
@@ -94,6 +101,13 @@
 <body>
   <div class="container">
     <h2>Vendas Balcão - Meta: R$ 100.000</h2>
+    <div class="controls">
+      <select id="mesSelecionado" onchange="carregarMes()"></select>
+      <div>
+        <button onclick="novaLinha()">+ Nova Venda</button>
+        <button onclick="if(confirm('Tem certeza que deseja zerar os dados deste mês?')) zerarMes()">Zerar Mês Atual</button>
+      </div>
+    </div>
     <table id="comissaoTable">
       <thead>
         <tr>
@@ -104,15 +118,7 @@
           <th>Comissão Total (5%)</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td><input type="number" step="0.01" onchange="calcular()"></td>
-          <td><input type="number" step="0.01" onchange="calcular()"></td>
-          <td><input type="text"></td>
-          <td class="lucro">R$ 0,00</td>
-          <td class="comissao">R$ 0,00</td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
       <tfoot>
         <tr>
           <td colspan="4">Comissão Total Acumulada:</td>
@@ -123,7 +129,7 @@
           <td id="comissaoDividida">R$ 0,00</td>
         </tr>
         <tr>
-          <td colspan="5" id="bonusInfo" class="bonus">Bata a meta de R$ 100.000 em vendas e cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!</td>
+          <td colspan="5" id="bonusInfo" class="bonus">Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!</td>
         </tr>
         <tr>
           <td colspan="5">
@@ -137,6 +143,56 @@
   </div>
 
   <script>
+    const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    const hoje = new Date();
+    const mesAtual = ${hoje.getFullYear()}-${hoje.getMonth() + 1};
+
+    const selectMes = document.getElementById('mesSelecionado');
+    for (let i = 0; i < 12; i++) {
+      const mesRef = ${hoje.getFullYear()}-${i + 1};
+      const opt = document.createElement('option');
+      opt.value = mesRef;
+      opt.textContent = ${meses[i]} ${hoje.getFullYear()};
+      if (mesRef === mesAtual) opt.selected = true;
+      selectMes.appendChild(opt);
+    }
+
+    function salvarMes() {
+      const dados = Array.from(document.querySelectorAll('#comissaoTable tbody tr')).map(row => ({
+        fornecedor: row.cells[0].children[0].value,
+        cliente: row.cells[1].children[0].value,
+        meio: row.cells[2].children[0].value
+      }));
+      localStorage.setItem(comissao-${selectMes.value}, JSON.stringify(dados));
+    }
+
+    function carregarMes() {
+      const tbody = document.querySelector('#comissaoTable tbody');
+      tbody.innerHTML = '';
+      const dados = JSON.parse(localStorage.getItem(comissao-${selectMes.value})) || [];
+      dados.forEach(dado => novaLinha(dado));
+      calcular();
+    }
+
+    function zerarMes() {
+      localStorage.removeItem(comissao-${selectMes.value});
+      carregarMes();
+    }
+
+    function novaLinha(dados = {}) {
+      const tbody = document.querySelector('#comissaoTable tbody');
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="number" step="0.01" value="${dados.fornecedor || ''}" onchange="calcular()"></td>
+        <td><input type="number" step="0.01" value="${dados.cliente || ''}" onchange="calcular()"></td>
+        <td><input type="text" value="${dados.meio || ''}" onchange="calcular()"></td>
+        <td class="lucro">R$ 0,00</td>
+        <td class="comissao">R$ 0,00</td>
+      `;
+      tbody.appendChild(row);
+      calcular();
+    }
+
     function calcular() {
       const rows = document.querySelectorAll('#comissaoTable tbody tr');
       let totalComissao = 0;
@@ -165,14 +221,18 @@
         bonusInfo.innerText = Parabéns! Meta de R$ 100.000 alcançada! Cada vendedor recebe um bônus de R$ 500,00.;
         bonusInfo.style.color = 'green';
       } else {
-        bonusInfo.innerText = Bata a meta de R$ 100.000 em vendas e cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!;
+        bonusInfo.innerText = Ao bater a meta de R$ 100.000 em vendas, cada vendedor ganha um bônus extra de R$ 500,00! Vamos juntos alcançar esse objetivo!;
         bonusInfo.style.color = '#333';
       }
 
       const progresso = Math.min((totalVendas / 100000) * 100, 100);
       progressBar.style.width = progresso + '%';
       progressBar.innerText = Math.floor(progresso) + '%';
+
+      salvarMes();
     }
+
+    carregarMes();
   </script>
 </body>
 </html>
